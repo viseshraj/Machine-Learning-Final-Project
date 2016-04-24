@@ -177,6 +177,39 @@ confMatrf &lt;- confusionMatrix(predrf,validation_new$classe)
 confMatrf$overall['Accuracy']</code></pre>
 <pre><code>##  Accuracy 
 ## 0.9942646</code></pre>
+<pre class="r"><code># Complete Summary
+confMatrf</code></pre>
+<pre><code>## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction    A    B    C    D    E
+##          A 2229    8    0    0    0
+##          B    3 1505    4    0    0
+##          C    0    5 1363   15    2
+##          D    0    0    1 1269    5
+##          E    0    0    0    2 1435
+## 
+## Overall Statistics
+##                                           
+##                Accuracy : 0.9943          
+##                  95% CI : (0.9923, 0.9958)
+##     No Information Rate : 0.2845          
+##     P-Value [Acc &gt; NIR] : &lt; 2.2e-16       
+##                                           
+##                   Kappa : 0.9927          
+##  Mcnemar's Test P-Value : NA              
+## 
+## Statistics by Class:
+## 
+##                      Class: A Class: B Class: C Class: D Class: E
+## Sensitivity            0.9987   0.9914   0.9963   0.9868   0.9951
+## Specificity            0.9986   0.9989   0.9966   0.9991   0.9997
+## Pos Pred Value         0.9964   0.9954   0.9841   0.9953   0.9986
+## Neg Pred Value         0.9995   0.9979   0.9992   0.9974   0.9989
+## Prevalence             0.2845   0.1935   0.1744   0.1639   0.1838
+## Detection Rate         0.2841   0.1918   0.1737   0.1617   0.1829
+## Detection Prevalence   0.2851   0.1927   0.1765   0.1625   0.1832
+## Balanced Accuracy      0.9986   0.9952   0.9965   0.9929   0.9974</code></pre>
 </div>
 </div>
 <div id="conclusion" class="section level1">

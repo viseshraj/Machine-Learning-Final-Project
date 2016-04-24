@@ -59,6 +59,8 @@ predrf <- predict(fitrf,validation_new)
 confMatrf <- confusionMatrix(predrf,validation_new$classe)
 # Out-Sample Accuracy
 confMatrf$overall['Accuracy']
+# Complete Summary
+confMatrf
 ```
 
 # Conclusion
