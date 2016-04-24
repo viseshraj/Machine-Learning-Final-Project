@@ -1,0 +1,65 @@
+---
+title: "Predict Dumbell Lifting Action using Sensor Data"
+author: "Viseshraj Ethirajan"
+date: "April 23, 2016"
+output: html_document
+---
+# Introduction:
+Using devices such as Jawbone Up, Nike FuelBand, and Fitbit it is now possible to collect a large amount of data about personal activity relatively inexpensively. These type of devices are part of the quantified self movement - a group of enthusiasts who take measurements about themselves regularly to improve their health, to find patterns in their behavior, or because they are tech geeks. One thing that people regularly do is quantify how much of a particular activity they do, but they rarely quantify how well they do it. In this project, your goal will be to use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants. They were asked to perform barbell lifts correctly and incorrectly in 5 different ways. More information is available from the website here: http://groupware.les.inf.puc-rio.br/har (see the section on the Weight Lifting Exercise Dataset).
+
+# Goal Of Report:
+The goal of this report is to predict the participant's Dumbell action based on the data registered by the different sensor on the belt, forearm, arm and the dumbell.
+
+# Retrive / Split / Explore / Clean / Fit / Predict Data:
+
+### Retrieving Training & Testing data set provided for the course
+```{r,message=FALSE}
+library(caret);library(randomForest)
+master_training <- read.table("pml-training.csv",header = TRUE,sep=",")
+master_testing <- read.table("pml-testing.csv",header = TRUE,sep=",")
+dim(master_training);dim(master_testing)
+```
+
+###  Spliting Validation Data from Training Data
+As the data set is ample, we go in for a data partition of 60% to 40% for Cross Validation.
+```{r}
+set.seed(12345)
+inTrain <- createDataPartition(master_training$classe,p=0.6,list=FALSE)
+training <- master_training[inTrain,]
+validation <- master_training[-inTrain,]
+dim(training);dim(validation)
+```
+
+### Explore Data
+```{r}
+table(unlist(lapply(training, function(x) any(is.na(x)))))
+table(unlist(lapply(validation, function(x) any(is.na(x)))))
+naDetails_training <- data.frame(holdsNA = unlist(lapply(training, function(x) any(is.na(x)))))
+rownames(subset(naDetails_training,holdsNA == "TRUE"))
+```
+It is observed that most of the NA values are in the columns of derived data. Hence we can attempt to remove them from the data set and check the NA count post clean up.
+
+### Clean Data
+The data set holds derived data mean, variance,standard deviation, max, min, amplitude, kurtosis & skewness. This can be removed from the dataset. Also the time & window variables are being removed from the data.
+```{r}
+headers <- colnames(training)
+training_new <- training[,grep("^(?!kurtosis|skewness|max|min|amplitude|var|avg|stddev|raw|cvtd|new|num|X)",headers,perl = TRUE)]
+validation_new <- validation[,grep("^(?!kurtosis|skewness|max|min|amplitude|var|avg|stddev|raw|cvtd|new|num|X)",headers,perl = TRUE)]
+dim(training_new);dim(validation_new)
+table(unlist(lapply(training_new, function(x) any(is.na(x)))))
+table(unlist(lapply(validation_new, function(x) any(is.na(x)))))
+```
+It is observed that all the NA values have been removed from the data set with the above steps. Hence the data is now ready to be modelled.
+
+## Fitting the Model:
+As the data set comprises of data from different sensors and their corresponding x, y and z axis components, the data is too complex to be linear. Hence we start with a Random Forest Model and understand the out-sample error.
+```{r}
+fitrf <- randomForest(classe~.,data=training_new)
+predrf <- predict(fitrf,validation_new)
+confMatrf <- confusionMatrix(predrf,validation_new$classe)
+# Out-Sample Accuracy
+confMatrf$overall['Accuracy']
+```
+
+# Conclusion
+The Out Sample Accuracy received in this model is 99.42% on the validation set that held 40% of the training data provided. As we receive a decent prediction with just the random forest method, we conclude our analysis here.
